@@ -21,3 +21,10 @@ class Team(models.Model):
 class Player(User):
     """A player is a user with a team."""
     team = models.ForeignKey("Team")
+
+
+class Solution(models.Model):
+    """A solution is a player's """
+    challenge = models.ForeignKey("Challenge")
+    solved_at = models.DateTimeField(auto_now_add=True)
+    solver = models.ForeignKey("Player")
