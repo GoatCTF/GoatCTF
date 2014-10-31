@@ -1,0 +1,1 @@
+FLAG_LENGTH = 256
