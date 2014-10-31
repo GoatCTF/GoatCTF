@@ -1,5 +1,6 @@
+from django.contrib.auth.models import User
 from django.db import models
-from core.settings import FLAG_LENGTH
+from core.settings import TEAM_NAME_LENGTH, FLAG_LENGTH
 
 
 class Challenge(models.Model):
@@ -9,3 +10,14 @@ class Challenge(models.Model):
     flag = models.CharField(max_length=FLAG_LENGTH)
     description_markdown = models.TextField()
     description_html = models.TextField()
+
+
+class Team(models.Model):
+    """A team is a collection of players."""
+    name = models.CharField(max_length=TEAM_NAME_LENGTH)
+    creator = models.ForeignKey("Player", related_name="created_teams")
+
+
+class Player(User):
+    """A player is a user with a team."""
+    team = models.ForeignKey("Team")
