@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 # Utility function to read the README file.
@@ -18,7 +18,7 @@ setup(
     license="MIT",
     keywords="example documentation tutorial",
     url="https://github.com/GoatCTF/GoatCTF/",
-    packages=['goatctf'],
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
