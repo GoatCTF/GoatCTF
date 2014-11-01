@@ -9,9 +9,10 @@ def player_factory():
     class PlayerFactory(object):
         def get(self):
             user = Player()
-            i=0
+            # FIXME There must be a cleaner way to do this.
+            i = 0
             while Player.objects.filter(username=str(i)).count() > 0:
-                i+=1
+                i += 1
             user.username = str(i)
             user.password = ''
             user.save()
@@ -32,3 +33,4 @@ def test_creator_team_equal(player_factory):
     player1.team = team2
     with pytest.raises(IntegrityError):
         player1.save()
+
