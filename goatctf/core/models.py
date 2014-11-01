@@ -7,9 +7,21 @@ from core.settings import CHALLENGE_NAME_LENGTH, FLAG_LENGTH, TEAM_NAME_LENGTH
 
 class Challenge(models.Model):
     """A challenge represents an individual problem to be solved."""
+
+    CATEGORY_CHOICES = (
+        ('be', 'Beer'),
+        ('cr', 'Crypto'),
+        ('ex', 'Exploitation'),
+        ('fo', 'Forensics'),
+        ('rn', 'Recon'),
+        ('re', 'Reversing'),
+        ('we', 'Web'),
+        ('mi', 'Miscellaneous'),
+    )
+
     name = models.CharField(max_length=CHALLENGE_NAME_LENGTH)
     points = models.IntegerField()
-    category = models.CharField(max_length=2)
+    category = models.CharField(max_length=2, choices=CATEGORY_CHOICES)
     flag = models.CharField(max_length=FLAG_LENGTH)
     description_markdown = models.TextField()
     description_html = models.TextField()
