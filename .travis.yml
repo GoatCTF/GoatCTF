@@ -6,6 +6,7 @@ install:
   - "pip install -e ."
 before_script:
   - sed -e "s/SECRET_KEY = ''/SECRET_KEY = 'test'/" goatctf/goatctf/settings.py.example > goatctf/goatctf/settings.py
+  - goatctf/manage.py syncdb
 script:
   - cd goatctf/tests
   - py.test
