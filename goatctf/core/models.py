@@ -46,7 +46,7 @@ class Team(models.Model):
 
 class Player(User):
     """A player is a user with a team."""
-    team = models.ForeignKey("Team")
+    team = models.ForeignKey("Team", blank=True, null=True)
 
 
 class Solution(models.Model):
