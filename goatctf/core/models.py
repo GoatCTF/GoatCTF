@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.utils import IntegrityError
 import markdown
 
 from core.settings import CHALLENGE_NAME_LENGTH, FLAG_LENGTH, TEAM_NAME_LENGTH
@@ -40,6 +41,15 @@ class Team(models.Model):
     name = models.CharField(max_length=TEAM_NAME_LENGTH, unique=True)
     creator = models.ForeignKey("Player", related_name="created_teams")
 
+    def save(self, *args, **kwargs):
+        if not hasattr(self, 'creator'):
+            raise IntegrityError("Creator must be defined.")
+        if self.creator.team and self.creator.team != self:
+            raise IntegrityError("Creator must be a part of the team")
+        super(Team, self).save(*args, **kwargs)
+        self.creator.team = self
+        self.creator.save()
+
     def __str__(self):
         return self.name
 
@@ -48,6 +58,11 @@ class Player(User):
     """A player is a user with a team."""
     team = models.ForeignKey("Team", blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        teams_exist = self.team and self.created_teams.count() > 0 
+        if teams_exist and self.team != self.created_teams.all()[0]:
+            raise IntegrityError("Player must be a part of all created teams!")
+        super(Player, self).save(*args, **kwargs)
 
 class Solution(models.Model):
     """A solution is a player's """
