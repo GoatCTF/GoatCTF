@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Challenge
+from core.models import Challenge, Team, Player, Solution
 from core.forms import ChallengeAdminForm
 
 
@@ -8,3 +8,6 @@ class ChallengeAdmin(admin.ModelAdmin):
     form = ChallengeAdminForm
 
 admin.site.register(Challenge, ChallengeAdmin)
+admin.site.register(Team)
+admin.site.register(Player)
+admin.site.register(Solution)
