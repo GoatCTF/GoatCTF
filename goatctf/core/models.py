@@ -30,11 +30,18 @@ class Challenge(models.Model):
         self.description_html = markdown.markdown(self.description_markdown)
         super(Challenge, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return "{} {}: {}".format(
+            self.get_category_display(), self.points, self.name)
+
 
 class Team(models.Model):
     """A team is a collection of players."""
     name = models.CharField(max_length=TEAM_NAME_LENGTH)
     creator = models.ForeignKey("Player", related_name="created_teams")
+
+    def __str__(self):
+        return self.name
 
 
 class Player(User):
@@ -47,3 +54,6 @@ class Solution(models.Model):
     challenge = models.ForeignKey("Challenge")
     solved_at = models.DateTimeField(auto_now_add=True)
     solver = models.ForeignKey("Player")
+
+    def __str__(self):
+        return "{} by {}".format(self.challenge, self.solver)
