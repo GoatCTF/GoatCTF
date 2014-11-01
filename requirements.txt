@@ -1,2 +1,5 @@
 Django==1.7.1
 django-gravatar2==1.1.4
+Markdown==2.5.1
+pytest==2.6.4
+pytest-django==2.7.0
