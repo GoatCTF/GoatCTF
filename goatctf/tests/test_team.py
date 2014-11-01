@@ -1,7 +1,7 @@
 from django.db.utils import IntegrityError
 import pytest
 
-from core.models import Player, Team
+from core.models import Player, Team, JoinRequest
 
 
 @pytest.fixture
@@ -50,3 +50,38 @@ def test_creators_are_unique(player_factory):
     with pytest.raises(IntegrityError):
         team2.save()
 
+@pytest.mark.django_db
+def test_join_request_approve(player_factory):
+    user1 = player_factory.get()
+    user2 = player_factory.get()
+
+    team = Team(name="Team", creator=user1)
+    team.save()
+
+    request = JoinRequest(player=user2, team=team)
+    request.save()
+
+    assert user2.team is None
+    assert request.pk is not None
+    request.approve()
+    assert request.pk is None
+    assert user2.team == team
+
+
+@pytest.mark.django_db
+def test_join_request_cancel(player_factory):
+    user1 = player_factory.get()
+    user2 = player_factory.get()
+
+    team = Team(name="Team", creator=user1)
+    team.save()
+
+    request = JoinRequest(player=user2, team=team)
+    request.save()
+
+    assert user2.team is None
+    assert request.pk is not None
+    request.cancel()
+    assert user2.team is None
+    assert request.pk is None
+ 

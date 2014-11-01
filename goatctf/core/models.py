@@ -65,10 +65,25 @@ class Player(User):
         super(Player, self).save(*args, **kwargs)
 
 class Solution(models.Model):
-    """A solution is a player's """
+    """A solution is a record of a player's successful attempt of a challenge."""
     challenge = models.ForeignKey("Challenge")
     solved_at = models.DateTimeField(auto_now_add=True)
     solver = models.ForeignKey("Player")
 
     def __str__(self):
         return "{} by {}".format(self.challenge, self.solver)
+
+
+class JoinRequest(models.Model):
+    """A join request is a request from a (non-creator) user to join a Team."""
+    player = models.OneToOneField("Player")
+    team = models.ForeignKey("Team")
+
+    def approve(self):
+        self.player.team = self.team
+        self.player.save()
+        self.delete()
+
+    def cancel(self):
+        self.delete()
+
