@@ -37,7 +37,7 @@ class Challenge(models.Model):
 
 class Team(models.Model):
     """A team is a collection of players."""
-    name = models.CharField(max_length=TEAM_NAME_LENGTH)
+    name = models.CharField(max_length=TEAM_NAME_LENGTH, unique=True)
     creator = models.ForeignKey("Player", related_name="created_teams")
 
     def __str__(self):
