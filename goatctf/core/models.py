@@ -41,6 +41,15 @@ class Team(models.Model):
     name = models.CharField(max_length=TEAM_NAME_LENGTH, unique=True)
     creator = models.ForeignKey("Player", related_name="created_teams")
 
+    @classmethod
+    def get_leaderboard(self):
+        sum_points = models.Sum('player__solution__challenge__points')
+        max_solved_at = models.Max('player__solution__solved_at')
+        all_annotated = Team.objects.all().annotate(points=sum_points)
+        all_annotated = all_annotated.annotate(solved_at=max_solved_at)
+        all_sorted = all_annotated.order_by('-points', 'solved_at')
+        return all_sorted
+
     def save(self, *args, **kwargs):
         if not hasattr(self, 'creator'):
             raise IntegrityError("Creator must be defined.")
