@@ -172,4 +172,14 @@ def test_join_request_cancel(player_factory):
     request.cancel()
     assert user2.team is None
     assert request.pk is None
- 
+
+
+@pytest.mark.django_db
+def test_points(challenge, player_factory, fresh_team):
+    assert fresh_team.points() == 0
+    member = Player(username='player', password='', team=fresh_team)
+    member.save()
+    challenge.points = 100
+    challenge.save()
+    Solution(challenge=challenge, solver=member).save()
+    assert fresh_team.points() == 100

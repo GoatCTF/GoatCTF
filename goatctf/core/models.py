@@ -41,6 +41,13 @@ class Team(models.Model):
     name = models.CharField(max_length=TEAM_NAME_LENGTH, unique=True)
     creator = models.ForeignKey("Player", related_name="created_teams")
 
+    def points(self):
+        """Gets the total score for all the challenges solved by this team."""
+        my_solutions = Challenge.objects.filter(solution__solver__team=self)
+        annotated = my_solutions.annotate(total_points=models.Sum('points'))
+        points = annotated.values('total_points')
+        return points[0]['total_points'] if points else 0
+
     @classmethod
     def get_leaderboard(self):
         sum_points = models.Sum('player__solution__challenge__points')
