@@ -110,9 +110,9 @@ def test_leaderboard_counts_challenges_once(challenge, player_factory, fresh_tea
     other_team.save()
     member = Player(username='player', password='', team=other_team)
     member.save()
-    Solution(challenge=challenge, solver=member).save()
-    Solution(challenge=challenge, solver=other_team.creator).save()
-    Solution(challenge=other_challenge, solver=fresh_team.creator).save()
+    Solution(challenge=other_challenge, solver=member).save()
+    Solution(challenge=other_challenge, solver=other_team.creator).save()
+    Solution(challenge=challenge, solver=fresh_team.creator).save()
     leaderboard = Team.get_leaderboard()
     assert (leaderboard[0] == other_team and
             leaderboard[1] == fresh_team and
