@@ -41,14 +41,20 @@ class Team(models.Model):
     name = models.CharField(max_length=TEAM_NAME_LENGTH, unique=True)
     creator = models.ForeignKey("Player", related_name="created_teams")
 
+    def points(self):
+        """Gets the total score for all the challenges solved by this team."""
+        my_solutions = Challenge.objects.filter(solution__solver__team=self)
+        annotated = my_solutions.annotate(total_points=models.Sum('points'))
+        points = annotated.values('total_points')
+        return points[0]['total_points'] if points else 0
+
     @classmethod
-    def get_leaderboard(self):
-        sum_points = models.Sum('player__solution__challenge__points')
+    def get_leaderboard(cls):
+        """Gets the leaderboard by most points and most recent solution."""
         max_solved_at = models.Max('player__solution__solved_at')
-        all_annotated = Team.objects.all().annotate(points=sum_points)
-        all_annotated = all_annotated.annotate(solved_at=max_solved_at)
-        all_sorted = all_annotated.order_by('-points', 'solved_at')
-        return all_sorted
+        all_annotated = Team.objects.all().annotate(solved_at=max_solved_at)
+        all_sorted = all_annotated.order_by('solved_at')
+        return sorted(all_sorted, key=lambda t: t.points(), reverse=True)
 
     def save(self, *args, **kwargs):
         if not hasattr(self, 'creator'):

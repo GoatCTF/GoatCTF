@@ -103,6 +103,23 @@ def test_leaderboard_sorts_by_points(challenge, player_factory, fresh_team):
 
 
 @pytest.mark.django_db
+def test_leaderboard_counts_challenges_once(challenge, player_factory, fresh_team):
+    other_challenge = Challenge(points=300, name="Challenge2")
+    other_challenge.save()
+    other_team = Team(name="Team with Score", creator=player_factory.get())
+    other_team.save()
+    member = Player(username='player', password='', team=other_team)
+    member.save()
+    Solution(challenge=other_challenge, solver=member).save()
+    Solution(challenge=other_challenge, solver=other_team.creator).save()
+    Solution(challenge=challenge, solver=fresh_team.creator).save()
+    leaderboard = Team.get_leaderboard()
+    assert (leaderboard[0] == other_team and
+            leaderboard[1] == fresh_team and
+            len(leaderboard) == 2)
+
+
+@pytest.mark.django_db
 def test_leaderboard_sorts_by_points_and_time(challenge, player_factory, fresh_team):
     team1 = Team(name="1st Team with Score", creator=player_factory.get())
     team1.save()
@@ -155,4 +172,14 @@ def test_join_request_cancel(player_factory):
     request.cancel()
     assert user2.team is None
     assert request.pk is None
- 
+
+
+@pytest.mark.django_db
+def test_points(challenge, player_factory, fresh_team):
+    assert fresh_team.points() == 0
+    member = Player(username='player', password='', team=fresh_team)
+    member.save()
+    challenge.points = 100
+    challenge.save()
+    Solution(challenge=challenge, solver=member).save()
+    assert fresh_team.points() == 100
