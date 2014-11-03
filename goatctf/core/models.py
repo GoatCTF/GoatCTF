@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 import markdown
 
 from core.settings import CHALLENGE_NAME_LENGTH, FLAG_LENGTH, TEAM_NAME_LENGTH
-
+from django_gravatar.helpers import get_gravatar_url, has_gravatar
 
 class Challenge(models.Model):
     """A challenge represents an individual problem to be solved."""
@@ -72,6 +72,12 @@ class Player(User):
         if teams_exist and self.team != self.created_teams.all()[0]:
             raise IntegrityError("Player must be a part of all created teams!")
         super(Player, self).save(*args, **kwargs)
+
+    def get_gravatar_url(self, size=150):
+        return get_gravatar_url(self.email, size)
+
+    def has_gravatar(self):
+        return has_gravatar(self.email)
 
 class Solution(models.Model):
     """A solution is a record of a player's successful attempt of a challenge."""
