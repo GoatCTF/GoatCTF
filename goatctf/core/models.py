@@ -108,3 +108,22 @@ class JoinRequest(models.Model):
     def cancel(self):
         self.delete()
 
+
+class Hint(models.Model):
+    """
+    A hint is a bit of content that provides additional information about a
+    challenge.
+    """
+    challenge = models.ForeignKey("Challenge")
+    created_date = models.DateTimeField(auto_now_add=True)
+    publish_date = models.DateTimeField(blank=True, null=False)
+    content_markdown = models.TextField()
+    content_html = models.TextField()
+    
+    def save(self, *args, **kwargs):
+        self.content_html = markdown.markdown(self.content_markdown)
+        if self.publish_date is None:
+            self.publish_date = self.created_date
+
+        super(Hint, self).save(*args, **kwargs)
+
