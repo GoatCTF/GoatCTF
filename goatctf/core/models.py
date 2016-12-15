@@ -85,6 +85,7 @@ class Player(User):
     def has_gravatar(self):
         return has_gravatar(self.email)
 
+
 class Solution(models.Model):
     """A solution is a record of a player's successful attempt of a challenge."""
     challenge = models.ForeignKey("Challenge")
@@ -108,3 +109,21 @@ class JoinRequest(models.Model):
     def cancel(self):
         self.delete()
 
+
+class Hint(models.Model):
+    """
+    A hint is a bit of content that provides additional information about a
+    challenge.
+    """
+    challenge = models.ForeignKey("Challenge")
+    created_date = models.DateTimeField(auto_now_add=True)
+    publish_date = models.DateTimeField(auto_now_add=True, editable=True)
+    content_markdown = models.TextField()
+    content_html = models.TextField()
+    
+    def save(self, *args, **kwargs):
+        self.content_html = markdown.markdown(self.content_markdown)
+        super(Hint, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "{challenge} ({date})".format(challenge=self.challenge, date=self.publish_date)
